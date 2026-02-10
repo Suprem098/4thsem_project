@@ -1,0 +1,79 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+<div class="{% if user.is_staff %}grid-2{% endif %}">
+    <div>
+        <div class="card mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Order #{{ order.id }}</h3>
+                <a href="{% url 'order_invoice' order.pk %}" class="btn btn-secondary btn-sm" target="_blank"><i class="fas fa-print me-1"></i> Invoice</a>
+            </div>
+            <div class="card-body">
+                <p><strong><i class="fas fa-user me-2"></i>Customer:</strong> {{ order.customer.name }}</p>
+                <p><strong><i class="fas fa-calendar-alt me-2"></i>Date:</strong> {{ order.order_date }}</p>
+                <p><strong><i class="fas fa-info-circle me-2"></i>Status:</strong> 
+                    {% if order.status == 'Pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% elif order.status == 'Completed' %}
+                        <span class="badge bg-success">Completed</span>
+                    {% else %}
+                        <span class="badge bg-danger">Cancelled</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <h4 class="mt-4 mb-3">Order Items</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Quantity</th>
+                    <th>Price (Each)</th>
+                    <th>Total</th>
+                    {% if user.is_staff %}<th>Actions</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.medicine.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>Rs. {{ item.medicine.price }}</td>
+                    <td>Rs. {% widthratio item.medicine.price 1 item.quantity %}</td>
+                    {% if user.is_staff %}
+                    <td>
+                        <a href="{% url 'order_item_delete' order_pk=order.pk item_pk=item.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove this item?')">Remove</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr><td colspan="{% if user.is_staff %}5{% else %}4{% endif %}">No items added yet.</td></tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-end">Grand Total:</th>
+                    <th class="bg-light">Rs. {{ order.total_amount }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% if user.is_staff %}
+    <div>
+        <div class="card">
+            <div class="card-header bg-success">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add Medicine</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success w-100 mt-2">Add to Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

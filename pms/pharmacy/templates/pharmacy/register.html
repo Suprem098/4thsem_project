@@ -1,0 +1,59 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+<div class="centered-container">
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="mb-3" id="div_{{ field.auto_id }}">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <small class="text-muted">Already have an account? <a href="{% url 'login' %}" class="text-primary fw-bold">Login here</a></small>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('id_role');
+    const specializationDiv = document.getElementById('div_id_specialization');
+
+    function toggleSpecialization() {
+        if (roleSelect.value === 'Doctor') {
+            specializationDiv.style.display = 'block';
+        } else {
+            specializationDiv.style.display = 'none';
+        }
+    }
+
+    // Initial check
+    toggleSpecialization();
+
+    // Add event listener
+    roleSelect.addEventListener('change', toggleSpecialization);
+});
+</script>
+{% endblock %}

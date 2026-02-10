@@ -1,0 +1,43 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Doctor Schedules</h2>
+    <a href="{% url 'doctor_schedule_create' %}" class="btn btn-primary">Add Schedule</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 border-0">Doctor</th>
+                        <th class="border-0">Day</th>
+                        <th class="border-0">Start Time</th>
+                        <th class="border-0">End Time</th>
+                        <th class="pe-4 border-0 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                    <tr>
+                        <td class="ps-4 fw-bold">{{ schedule.doctor.name }}</td>
+                        <td>{{ schedule.day_of_week }}</td>
+                        <td>{{ schedule.start_time }}</td>
+                        <td>{{ schedule.end_time }}</td>
+                        <td class="pe-4 text-end">
+                            <a href="{% url 'doctor_schedule_delete' schedule.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">No schedules found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

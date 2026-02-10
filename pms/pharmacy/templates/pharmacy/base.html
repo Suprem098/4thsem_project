@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Management System</title>
+    <link rel="stylesheet" href="{% static 'pharmacy/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        {% if user.is_authenticated %}
+        <!-- Sidebar -->
+        <div class="bg-white border-end" id="sidebar-wrapper">
+            <a href="{% url 'dashboard' %}" class="sidebar-heading"><i class="fas fa-clinic-medical"></i> Pharmacy MS</a>
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action" href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                
+                {% if user.doctor %}
+                <a class="list-group-item list-group-item-action" href="{% url 'doctor_dashboard' %}"><i class="fas fa-user-md me-2"></i> Doctor Panel</a>
+                {% endif %}
+
+                {% if user.is_staff %}
+                <div class="sidebar-subheading text-uppercase fw-bold px-4 mt-3 mb-2">Inventory</div>
+                <a class="list-group-item list-group-item-action" href="{% url 'medicine_list' %}"><i class="fas fa-pills me-2"></i> Medicines</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'supplier_list' %}"><i class="fas fa-truck me-2"></i> Suppliers</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'supplier_request_list' %}"><i class="fas fa-clipboard-list me-2"></i> Requests</a>
+                
+                <div class="sidebar-subheading text-uppercase fw-bold px-4 mt-3 mb-2">People</div>
+                <a class="list-group-item list-group-item-action" href="{% url 'doctor_list' %}"><i class="fas fa-user-md me-2"></i> Doctors</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'doctor_schedule_list' %}"><i class="fas fa-calendar-alt me-2"></i> Schedules</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'customer_list' %}"><i class="fas fa-users me-2"></i> Customers</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'staff_list' %}"><i class="fas fa-user-shield me-2"></i> Staff</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'pending_users_list' %}"><i class="fas fa-user-check me-2"></i> Approvals</a>
+
+                <div class="sidebar-subheading text-uppercase fw-bold px-4 mt-3 mb-2">Sales & Ops</div>
+                <a class="list-group-item list-group-item-action" href="{% url 'order_list' %}"><i class="fas fa-shopping-cart me-2"></i> Orders</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'prescription_list' %}"><i class="fas fa-file-prescription me-2"></i> Prescriptions</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'sales_report' %}"><i class="fas fa-chart-line me-2"></i> Sales Report</a>
+                {% else %}
+                <a class="list-group-item list-group-item-action" href="{% url 'customer_medicine_list' %}"><i class="fas fa-shopping-basket me-2"></i> Buy Medicine</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'prescription_list' %}"><i class="fas fa-file-prescription me-2"></i> My Prescriptions</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'appointment_list' %}"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
+                <a class="list-group-item list-group-item-action" href="{% url 'customer_profile' %}"><i class="fas fa-user me-2"></i> Profile</a>
+                {% endif %}
+                
+                <div class="mt-auto p-3">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-danger w-100" type="submit"><i class="fas fa-sign-out-alt me-2"></i> Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" {% if not user.is_authenticated %}style="margin-left: 0;"{% endif %}>
+            {% if not user.is_authenticated %}
+            <nav class="navbar">
+                <div class="container">
+                    <a class="navbar-brand" href="{% url 'dashboard' %}">Pharmacy MS</a>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    </ul>
+                </div>
+            </nav>
+            {% endif %}
+
+            <div class="container-fluid main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="text-center">
+        <div class="container">
+            <small>&copy; {% now "Y" %} Pharmacy Management System</small>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+<div class="centered-container" style="min-height: auto; padding-bottom: 2rem;">
+    <div style="max-width: 800px; width: 100%;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+            <a href="{% url 'prescription_list' %}" class="btn btn-outline-light text-dark border"><i class="fas fa-arrow-left"></i> Back</a>
+            <div>
+                {% if user.is_staff and prescription.status == 'Pending' %}
+                    <a href="{% url 'prescription_action' prescription.pk 'approve' %}" class="btn btn-success me-2"><i class="fas fa-check"></i> Approve</a>
+                    <a href="{% url 'prescription_action' prescription.pk 'reject' %}" class="btn btn-danger me-2"><i class="fas fa-times"></i> Reject</a>
+                {% elif user.is_staff and prescription.status == 'Approved' %}
+                    <a href="{% url 'prescription_action' prescription.pk 'dispense' %}" class="btn btn-primary me-2"><i class="fas fa-pills"></i> Dispense</a>
+                {% endif %}
+                <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print"></i> Print</button>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-lg">
+            <div class="card-body p-5">
+                <!-- Header -->
+                <div class="border-bottom pb-4 mb-4 d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3 class="fw-bold text-primary mb-1">Pharmacy MS</h3>
+                        <p class="text-muted small mb-0">123 Medical Center Drive, Cityville</p>
+                        <p class="text-muted small">Phone: (555) 123-4567</p>
+                    </div>
+                    <div class="text-end">
+                        <h5 class="fw-bold mb-1">Dr. {{ prescription.doctor.username }}</h5>
+                        <p class="text-muted small mb-0">Prescription #{{ prescription.id }}</p>
+                        <p class="text-muted small">{{ prescription.date_created|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+
+                <!-- Patient Info -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="p-3 bg-light rounded-3">
+                            <span class="text-muted small text-uppercase fw-bold">Patient Name</span>
+                            <h5 class="fw-bold mb-0 text-dark">{{ prescription.patient.username }}</h5>
+                            <small class="text-muted">{{ prescription.patient.email }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rx Symbol -->
+                <div class="mb-3">
+                    <h1 class="display-4" style="font-family: serif; font-style: italic; color: var(--primary);">Rx</h1>
+                </div>
+
+                <!-- Medicines -->
+                <div class="table-responsive mb-4">
+                    <table class="table table-borderless">
+                        <thead class="border-bottom">
+                            <tr>
+                                <th class="ps-0">Medicine</th>
+                                <th>Dosage</th>
+                                <th>Frequency</th>
+                                <th class="pe-0 text-end">Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in prescription.items.all %}
+                            <tr>
+                                <td class="ps-0 fw-bold">{{ item.medicine.name }}</td>
+                                <td>{{ item.dosage }}</td>
+                                <td>{{ item.frequency }}</td>
+                                <td class="pe-0 text-end">{{ item.duration }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Remarks & Footer -->
+                {% if prescription.remarks %}
+                <div class="mb-5">
+                    <h6 class="fw-bold text-muted small text-uppercase">Doctor's Remarks</h6>
+                    <p class="p-3 border rounded bg-light">{{ prescription.remarks }}</p>
+                </div>
+                {% endif %}
+
+                <div class="mt-5 pt-4 border-top d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small">Status:</span>
+                        {% if prescription.status == 'Pending' %}
+                            <span class="badge bg-warning text-dark">Pending Review</span>
+                        {% elif prescription.status == 'Approved' %}
+                            <span class="badge bg-success">Approved</span>
+                        {% elif prescription.status == 'Dispensed' %}
+                            <span class="badge bg-info">Dispensed</span>
+                        {% else %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </div>
+                    <div class="text-end">
+                        <div style="height: 40px; border-bottom: 1px solid #ccc; width: 150px; margin-bottom: 5px;"></div>
+                        <small class="text-muted">Doctor's Signature</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    @media print {
+        .no-print, .navbar, footer { display: none !important; }
+        .main-content { padding: 0 !important; }
+        .card { box-shadow: none !important; border: none !important; }
+        body { background: white !important; }
+    }
+</style>
+{% endblock %}

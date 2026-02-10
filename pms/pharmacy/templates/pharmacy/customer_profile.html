@@ -1,0 +1,24 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+<div class="centered-container">
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Update Profile</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        <a href="{% url 'change_password' %}" class="btn btn-warning">Change Password</a>
+                        <button type="submit" class="btn btn-success">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

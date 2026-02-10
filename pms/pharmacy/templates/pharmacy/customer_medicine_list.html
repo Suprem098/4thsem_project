@@ -1,0 +1,54 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+<form method="get" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search for medicines..." value="{{ request.GET.q }}">
+        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Search</button>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center bg-white">
+        <h3 class="mb-0">Available Medicines</h3>
+    </div>
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.description }}</td>
+                    <td>Rs. {{ medicine.price }}</td>
+                    <td>
+                        {% if medicine.quantity > 0 %}
+                            <span class="text-success">{{ medicine.quantity }} available</span>
+                        {% else %}
+                            <span class="text-danger">Out of Stock</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not is_doctor %}
+                        {% if medicine.quantity > 0 %}
+                        <a href="{% url 'buy_medicine' medicine.pk %}" class="btn btn-primary btn-sm">Buy Now</a>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm" disabled>Unavailable</button>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

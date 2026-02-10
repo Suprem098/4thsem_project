@@ -1,0 +1,45 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+<div class="centered-container">
+    <div style="max-width: 800px;">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom pt-4 px-4">
+                <h4 class="fw-bold mb-0 text-primary">Create New Prescription</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Select Patient</label>
+                        {{ form.patient }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Clinical Notes / Remarks</label>
+                        {{ form.remarks }} <!-- Ensure your form widget renders a textarea with class form-control -->
+                    </div>
+
+                    <h6 class="mt-4 mb-3 fw-bold text-dark border-bottom pb-2">Prescribed Medicines</h6>
+                    {{ formset.management_form }}
+                    <div class="bg-light p-3 rounded-3 mb-3">
+                    {% for form in formset %}
+                        <div class="row mb-3 g-2 align-items-end">
+                            <div class="col-md-4"><label class="small text-muted">Medicine</label>{{ form.medicine }}</div>
+                            <div class="col-md-3"><label class="small text-muted">Dosage</label>{{ form.dosage }}</div>
+                            <div class="col-md-3"><label class="small text-muted">Frequency</label>{{ form.frequency }}</div>
+                            <div class="col-md-2"><label class="small text-muted">Duration</label>{{ form.duration }}</div>
+                        </div>
+                    {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'prescription_list' %}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Submit Prescription</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
